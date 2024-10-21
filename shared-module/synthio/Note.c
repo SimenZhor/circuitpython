@@ -63,6 +63,14 @@ void common_hal_synthio_note_set_bend(synthio_note_obj_t *self, mp_obj_t value_i
     synthio_block_assign_slot(value_in, &self->bend, MP_QSTR_bend);
 }
 
+mp_obj_t common_hal_synthio_note_get_playback_direction(synthio_note_obj_t *self) {
+    return self->playback_direction.obj;
+}
+
+void common_hal_synthio_note_set_playback_direction(synthio_note_obj_t *self, mp_obj_t value_in) {
+    synthio_block_assign_slot(value_in, &self->playback_direction, MP_QSTR_playback_direction);
+}
+
 mp_obj_t common_hal_synthio_note_get_ring_bend(synthio_note_obj_t *self) {
     return self->ring_bend.obj;
 }

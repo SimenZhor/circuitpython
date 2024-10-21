@@ -15,20 +15,21 @@
 #include "shared-module/synthio/Note.h"
 
 static const mp_arg_t note_properties[] = {
-    { MP_QSTR_frequency, MP_ARG_OBJ | MP_ARG_REQUIRED, {.u_obj = NULL } },
-    { MP_QSTR_panning, MP_ARG_OBJ | MP_ARG_KW_ONLY, {.u_obj = MP_ROM_INT(0) } },
-    { MP_QSTR_amplitude, MP_ARG_OBJ | MP_ARG_KW_ONLY, {.u_obj = MP_ROM_INT(1) } },
-    { MP_QSTR_bend, MP_ARG_OBJ | MP_ARG_KW_ONLY, {.u_obj = MP_ROM_INT(0) } },
-    { MP_QSTR_waveform, MP_ARG_OBJ | MP_ARG_KW_ONLY, {.u_obj = MP_ROM_NONE } },
-    { MP_QSTR_waveform_loop_start, MP_ARG_OBJ, {.u_obj = MP_ROM_INT(0) } },
-    { MP_QSTR_waveform_loop_end, MP_ARG_OBJ, {.u_obj = MP_ROM_INT(SYNTHIO_WAVEFORM_SIZE) } },
-    { MP_QSTR_envelope, MP_ARG_OBJ | MP_ARG_KW_ONLY, {.u_obj = MP_ROM_NONE } },
-    { MP_QSTR_filter, MP_ARG_OBJ | MP_ARG_KW_ONLY, {.u_obj = MP_ROM_NONE } },
-    { MP_QSTR_ring_frequency, MP_ARG_OBJ, {.u_obj = MP_ROM_INT(0) } },
-    { MP_QSTR_ring_bend, MP_ARG_OBJ, {.u_obj = MP_ROM_INT(0) } },
-    { MP_QSTR_ring_waveform, MP_ARG_OBJ | MP_ARG_KW_ONLY, {.u_obj = MP_ROM_NONE } },
-    { MP_QSTR_ring_waveform_loop_start, MP_ARG_OBJ, {.u_obj = MP_ROM_INT(0) } },
-    { MP_QSTR_ring_waveform_loop_end, MP_ARG_OBJ, {.u_obj = MP_ROM_INT(SYNTHIO_WAVEFORM_SIZE) } },
+    {MP_QSTR_frequency, MP_ARG_OBJ | MP_ARG_REQUIRED, {.u_obj = NULL}},
+    {MP_QSTR_panning, MP_ARG_OBJ | MP_ARG_KW_ONLY, {.u_obj = MP_ROM_INT(0)}},
+    {MP_QSTR_amplitude, MP_ARG_OBJ | MP_ARG_KW_ONLY, {.u_obj = MP_ROM_INT(1)}},
+    {MP_QSTR_bend, MP_ARG_OBJ | MP_ARG_KW_ONLY, {.u_obj = MP_ROM_INT(0)}},
+    {MP_QSTR_playback_direction, MP_ARG_OBJ | MP_ARG_KW_ONLY, {.u_obj = MP_ROM_TRUE}},
+    {MP_QSTR_waveform, MP_ARG_OBJ | MP_ARG_KW_ONLY, {.u_obj = MP_ROM_NONE}},
+    {MP_QSTR_waveform_loop_start, MP_ARG_OBJ, {.u_obj = MP_ROM_INT(0)}},
+    {MP_QSTR_waveform_loop_end, MP_ARG_OBJ, {.u_obj = MP_ROM_INT(SYNTHIO_WAVEFORM_SIZE)}},
+    {MP_QSTR_envelope, MP_ARG_OBJ | MP_ARG_KW_ONLY, {.u_obj = MP_ROM_NONE}},
+    {MP_QSTR_filter, MP_ARG_OBJ | MP_ARG_KW_ONLY, {.u_obj = MP_ROM_NONE}},
+    {MP_QSTR_ring_frequency, MP_ARG_OBJ, {.u_obj = MP_ROM_INT(0)}},
+    {MP_QSTR_ring_bend, MP_ARG_OBJ, {.u_obj = MP_ROM_INT(0)}},
+    {MP_QSTR_ring_waveform, MP_ARG_OBJ | MP_ARG_KW_ONLY, {.u_obj = MP_ROM_NONE}},
+    {MP_QSTR_ring_waveform_loop_start, MP_ARG_OBJ, {.u_obj = MP_ROM_INT(0)}},
+    {MP_QSTR_ring_waveform_loop_end, MP_ARG_OBJ, {.u_obj = MP_ROM_INT(SYNTHIO_WAVEFORM_SIZE)}},
 };
 //| class Note:
 //|     def __init__(
@@ -42,6 +43,7 @@ static const mp_arg_t note_properties[] = {
 //|         envelope: Optional[Envelope] = None,
 //|         amplitude: BlockInput = 0.0,
 //|         bend: BlockInput = 0.0,
+//|         playback_direction: BlockInput = 1.0,
 //|         filter: Optional[Biquad] = None,
 //|         ring_frequency: float = 0.0,
 //|         ring_bend: float = 0.0,
@@ -179,6 +181,30 @@ MP_DEFINE_CONST_FUN_OBJ_2(synthio_note_set_bend_obj, synthio_note_set_bend);
 MP_PROPERTY_GETSET(synthio_note_bend_obj,
     (mp_obj_t)&synthio_note_get_bend_obj,
     (mp_obj_t)&synthio_note_set_bend_obj);
+
+//|
+//|     playback_direction: bool
+//|     """The playback direction of the note waveform
+//|
+//|     Represented as a boolean value. True means that the waveform is played back in the forward direction.
+//|
+//|     To achieve a wacka-wacka effect, attach an LFO here.
+//|     """
+static mp_obj_t synthio_note_get_playback_direction(mp_obj_t self_in) {
+    synthio_note_obj_t *self = MP_OBJ_TO_PTR(self_in);
+    return common_hal_synthio_note_get_playback_direction(self);
+}
+MP_DEFINE_CONST_FUN_OBJ_1(synthio_note_get_playback_direction_obj, synthio_note_get_playback_direction);
+
+static mp_obj_t synthio_note_set_playback_direction(mp_obj_t self_in, mp_obj_t arg) {
+    synthio_note_obj_t *self = MP_OBJ_TO_PTR(self_in);
+    common_hal_synthio_note_set_playback_direction(self, arg);
+    return mp_const_none;
+}
+MP_DEFINE_CONST_FUN_OBJ_2(synthio_note_set_playback_direction_obj, synthio_note_set_playback_direction);
+MP_PROPERTY_GETSET(synthio_note_playback_direction_obj,
+    (mp_obj_t)&synthio_note_get_playback_direction_obj,
+    (mp_obj_t)&synthio_note_set_playback_direction_obj);
 
 //|     waveform: Optional[ReadableBuffer]
 //|     """The waveform of this note. Setting the waveform to a buffer of a different size resets the note's phase."""
@@ -395,6 +421,7 @@ static const mp_rom_map_elem_t synthio_note_locals_dict_table[] = {
     { MP_ROM_QSTR(MP_QSTR_envelope), MP_ROM_PTR(&synthio_note_envelope_obj) },
     { MP_ROM_QSTR(MP_QSTR_amplitude), MP_ROM_PTR(&synthio_note_amplitude_obj) },
     { MP_ROM_QSTR(MP_QSTR_bend), MP_ROM_PTR(&synthio_note_bend_obj) },
+    { MP_ROM_QSTR(MP_QSTR_playback_direction), MP_ROM_PTR(&synthio_note_playback_direction_obj) },
     { MP_ROM_QSTR(MP_QSTR_ring_frequency), MP_ROM_PTR(&synthio_note_ring_frequency_obj) },
     { MP_ROM_QSTR(MP_QSTR_ring_bend), MP_ROM_PTR(&synthio_note_ring_bend_obj) },
     { MP_ROM_QSTR(MP_QSTR_ring_waveform), MP_ROM_PTR(&synthio_note_ring_waveform_obj) },

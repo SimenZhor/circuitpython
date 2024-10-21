@@ -28,6 +28,9 @@ void common_hal_synthio_note_set_amplitude(synthio_note_obj_t *self, mp_obj_t va
 mp_obj_t common_hal_synthio_note_get_bend(synthio_note_obj_t *self);
 void common_hal_synthio_note_set_bend(synthio_note_obj_t *self, mp_obj_t value);
 
+mp_obj_t common_hal_synthio_note_get_playback_direction(synthio_note_obj_t *self);
+void common_hal_synthio_note_set_playback_direction(synthio_note_obj_t *self, mp_obj_t value);
+
 mp_obj_t common_hal_synthio_note_get_waveform_obj(synthio_note_obj_t *self);
 void common_hal_synthio_note_set_waveform(synthio_note_obj_t *self, mp_obj_t value);
 

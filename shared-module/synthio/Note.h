@@ -14,7 +14,7 @@
 typedef struct synthio_note_obj {
     mp_obj_base_t base;
 
-    synthio_block_slot_t panning, bend, amplitude, ring_bend;
+    synthio_block_slot_t panning, bend, amplitude, ring_bend, playback_direction;
 
     mp_float_t frequency, ring_frequency;
     mp_obj_t waveform_obj, envelope_obj, ring_waveform_obj;
@@ -22,6 +22,7 @@ typedef struct synthio_note_obj {
 
     biquad_filter_state filter_state;
 
+    // bool playback_direction;
     int32_t sample_rate;
 
     int32_t frequency_scaled;

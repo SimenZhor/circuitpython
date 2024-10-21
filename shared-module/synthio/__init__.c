@@ -167,8 +167,10 @@ static bool synth_note_into_buffer(synthio_synth_t *synth, int chan, int32_t *ou
     const int16_t *ring_waveform = NULL;
     uint32_t ring_waveform_start = 0;
     uint32_t ring_waveform_length = 0;
+    bool playback_dir = true; // True means forward
 
-    if (mp_obj_is_small_int(note_obj)) {
+    if (mp_obj_is_small_int(note_obj))
+    {
         uint8_t note = mp_obj_get_int(note_obj);
         uint8_t octave = note / 12;
         uint16_t base_freq = notes[note % 12];
@@ -178,7 +180,9 @@ static bool synth_note_into_buffer(synthio_synth_t *synth, int chan, int32_t *ou
         // dds_rate = 2^SHIFT * rate / den
         // dds_rate = 2^(SHIFT-10+octave) * base_freq * waveform_length / sample_rate
         dds_rate = (sample_rate / 2 + ((uint64_t)(base_freq * waveform_length) << (SYNTHIO_FREQUENCY_SHIFT - 10 + octave))) / sample_rate;
-    } else {
+    }
+    else
+    {
         synthio_note_obj_t *note = MP_OBJ_TO_PTR(note_obj);
         int32_t frequency_scaled = synthio_note_step(note, sample_rate, dur, loudness);
         if (note->waveform_buf.buf) {
@@ -207,6 +211,7 @@ static bool synth_note_into_buffer(synthio_synth_t *synth, int chan, int32_t *ou
                 ring_dds_rate = 0; // can't ring at that frequency
             }
         }
+        playback_dir = (bool) synthio_block_slot_get_scaled(&note->playback_direction, 0, 1); 
     }
 
     uint32_t offset = waveform_start << SYNTHIO_FREQUENCY_SHIFT;
@@ -231,7 +236,11 @@ static bool synth_note_into_buffer(synthio_synth_t *synth, int chan, int32_t *ou
             accum = accum - lim + offset;
         }
         int16_t idx = accum >> SYNTHIO_FREQUENCY_SHIFT;
-        out_buffer32[i] = waveform[idx];
+        if (playback_dir > 0){
+            out_buffer32[i] = waveform[idx];
+        }else{
+            out_buffer32[i] = waveform[waveform_length - idx];
+        }
     }
     synth->accum[chan] = accum;
 
